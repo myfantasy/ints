@@ -17,6 +17,16 @@ type Uuid struct {
 	UInt128
 }
 
+// Less returns true when i < val
+func (i Uuid) Less(val Uuid) bool {
+	return i.UInt128.Less(&val.UInt128)
+}
+
+// Equal returns true when i == val
+func (i Uuid) Equal(val Uuid) bool {
+	return i == val
+}
+
 func (i Uuid) Link() *Uuid {
 	return &i
 }
@@ -65,6 +75,15 @@ func (usg *UuidSerialGenerator) Next() (res Uuid) {
 		}
 		time.Sleep(time.Microsecond * 1)
 	}
+}
+
+// NextOrDefault gets Next from usg where usg != nil else uses DefaultUuidGenerator.Next()
+func (usg *UuidSerialGenerator) NextOrDefault() (res Uuid) {
+	if usg != nil {
+		return usg.Next()
+	}
+
+	return DefaultUuidGenerator.Next()
 }
 
 // NextRaw - Next Serial id (requare to lock befor call)
