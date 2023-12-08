@@ -37,6 +37,11 @@ func init() {
 	if err != nil {
 		panic("INIT DefaultUuidGenerator.Init() error: " + err.Error())
 	}
+
+	err = DefaultRandomUuidGenerator.Init()
+	if err != nil {
+		panic("INIT DefaultRandomUuidGenerator.Init() error: " + err.Error())
+	}
 }
 
 func BytesAppendForward(buf []byte, l int) []byte {

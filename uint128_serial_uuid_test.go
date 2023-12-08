@@ -44,6 +44,6 @@ func TestUInt128ToUUID(t *testing.T) {
 
 func BenchmarkUInt128Next(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		DefaultUuidGenerator.Next()
+		NextUUID()
 	}
 }
