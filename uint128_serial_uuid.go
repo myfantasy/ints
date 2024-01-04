@@ -127,6 +127,36 @@ func (usg *UuidSerialGenerator) NextRaw() (res Uuid, overflow bool) {
 	return res, overflow
 }
 
+// LimitSerialUUID - Limit (min) Serial id limit by date with format
+// xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
+// M 0100 (version 4)
+// N 10 (variant 1)
+// tttttttt-tttt-Msss-Nrrr-rrrrrrrrrrrr
+// M - 0100 (version 4)
+// N - 10ss (variant 1)
+// t - time (unix milli)
+// s - step
+// r - random value (Generated on Init)
+func LimitSerialUUID(timeCalc time.Time) (res Uuid) {
+	a := uint64(timeCalc.UnixMilli())
+
+	// tttttttt-tttt-
+	a = a << 16
+
+	// -Msss-
+	m := 0>>2 + Mval
+
+	// -N (10ss)
+	n := (0&3)<<60 + Nval
+
+	// tttttttt-tttt-Msss-
+	res.UInt128[0] = a + m
+	// -Nrrr-rrrrrrrrrrrr (-N (10ss))
+	res.UInt128[1] = n
+
+	return res
+}
+
 func (i *Uuid) AsUUID() string {
 	bts := i.AsBytes()
 	res := make([]byte, 36)
@@ -178,7 +208,7 @@ func (i *Uuid) UnmarshalJSON(input []byte) error {
 	return i.FromTextByte(input[1:len(input)-1], 16, true)
 }
 
-//MarshalJSON() implements json.Marshaler.
+// MarshalJSON() implements json.Marshaler.
 func (i Uuid) MarshalJSON() ([]byte, error) {
 	txt := "\"" + i.AsUUID() + "\""
 	return []byte(txt), nil
