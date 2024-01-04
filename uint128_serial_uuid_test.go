@@ -64,3 +64,20 @@ func TestLimitSerialUUID(t *testing.T) {
 		t.Fatalf("ls should be less then a2 but not: ls: %v a2: %v", ls, a2)
 	}
 }
+
+func TestGetTimeFormSerialUUID(t *testing.T) {
+	t0 := time.Now()
+	time.Sleep(2 * time.Millisecond)
+	a1 := NextUUID()
+	tm := GetTimeFormSerialUUID(a1)
+	time.Sleep(2 * time.Millisecond)
+	t1 := time.Now()
+
+	if tm.Before(t0) {
+		t.Fatalf("tm should be after then t0 but not: tm: %v t0: %v", tm, t0)
+	}
+
+	if tm.After(t1) {
+		t.Fatalf("tm should be befor then t1 but not: tm: %v t0: %v", tm, t1)
+	}
+}

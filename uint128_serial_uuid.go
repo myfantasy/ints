@@ -157,6 +157,12 @@ func LimitSerialUUID(timeCalc time.Time) (res Uuid) {
 	return res
 }
 
+func GetTimeFormSerialUUID(val Uuid) time.Time {
+	unix := val.UInt128[0] >> 16
+
+	return time.UnixMilli(int64(unix))
+}
+
 func (i *Uuid) AsUUID() string {
 	bts := i.AsBytes()
 	res := make([]byte, 36)
