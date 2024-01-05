@@ -51,9 +51,9 @@ func BenchmarkUInt128Next(b *testing.B) {
 
 func TestLimitSerialUUID(t *testing.T) {
 	a1 := NextUUID()
-	time.Sleep(1 * time.Microsecond)
+	time.Sleep(1 * time.Millisecond)
 	ls := LimitSerialUUID(time.Now())
-	time.Sleep(1 * time.Microsecond)
+	time.Sleep(1 * time.Millisecond)
 	a2 := NextUUID()
 
 	if ls.Less(a1) {
