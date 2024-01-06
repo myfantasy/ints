@@ -19,7 +19,7 @@ type Uuid struct {
 
 // Less returns true when i < val
 func (i Uuid) Less(val Uuid) bool {
-	return i.UInt128.Less(&val.UInt128)
+	return i.UInt128.Less(val.UInt128)
 }
 
 // Equal returns true when i == val

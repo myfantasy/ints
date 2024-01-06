@@ -10,7 +10,7 @@ import (
 type UInt128 [2]uint64
 
 // Less returns true when i < val
-func (i *UInt128) Less(val *UInt128) bool {
+func (i UInt128) Less(val UInt128) bool {
 	if i[0] < val[0] {
 		return true
 	} else if i[0] > val[0] {
@@ -20,18 +20,18 @@ func (i *UInt128) Less(val *UInt128) bool {
 }
 
 // Equal returns true when i == val
-func (i *UInt128) Equal(val *UInt128) bool {
-	return *i == *val
+func (i UInt128) Equal(val UInt128) bool {
+	return i == val
 }
 
-func (i *UInt128) AsBytes() (result [16]byte) {
+func (i UInt128) AsBytes() (result [16]byte) {
 	binary.BigEndian.PutUint64(result[0:8], i[0])
 	binary.BigEndian.PutUint64(result[8:16], i[1])
 	return result
 }
 
 // BytesLen returs count of requared bytes (16..0) if 0 then i is 0
-func (i *UInt128) BytesLen() int {
+func (i UInt128) BytesLen() int {
 	bytes := i.AsBytes()
 
 	for i := 0; i < 16; i++ {
@@ -54,14 +54,14 @@ func (i UInt128) Link() *UInt128 {
 	return &i
 }
 
-func (i *UInt128) Copy() UInt128 {
+func (i UInt128) Copy() UInt128 {
 	return UInt128{i[0], i[1]}
 }
 
-func (i *UInt128) IsEmpty() bool {
+func (i UInt128) IsEmpty() bool {
 	return i[0] == 0 && i[1] == 0
 }
-func (i *UInt128) IsUint64() bool {
+func (i UInt128) IsUint64() bool {
 	return i[0] == 0
 }
 
@@ -108,15 +108,15 @@ func (i *UInt128) SetBytes(buf []byte) *UInt128 {
 	return i
 }
 
-func (i *UInt128) UInt64() uint64 {
+func (i UInt128) UInt64() uint64 {
 	return i[1]
 }
-func (i *UInt128) Int() int {
+func (i UInt128) Int() int {
 	return int(i[1])
 }
 
 // Add creates result to the sum i+y
-func (i *UInt128) Add(y *UInt128) (result UInt128) {
+func (i UInt128) Add(y UInt128) (result UInt128) {
 	var carry uint64
 	result[1], carry = bits.Add64(i[1], y[1], carry)
 	result[0], _ = bits.Add64(i[0], y[0], carry)
@@ -124,7 +124,7 @@ func (i *UInt128) Add(y *UInt128) (result UInt128) {
 }
 
 // AddUInt64 creates result to the sum i+y
-func (i *UInt128) AddUInt64(y uint64) (result UInt128) {
+func (i UInt128) AddUInt64(y uint64) (result UInt128) {
 	var carry uint64
 	result[1], carry = bits.Add64(i[1], y, carry)
 	result[0], _ = bits.Add64(i[0], 0, carry)
@@ -132,14 +132,14 @@ func (i *UInt128) AddUInt64(y uint64) (result UInt128) {
 }
 
 // Add creates result to the sum i+y, carry is 0
-func (i *UInt128) AddOverflow(y *UInt128, carry uint64) (result UInt128, carryOut uint64) {
+func (i UInt128) AddOverflow(y UInt128, carry uint64) (result UInt128, carryOut uint64) {
 	result[1], carry = bits.Add64(i[1], y[1], carry)
 	result[0], carry = bits.Add64(i[0], y[0], carry)
 	return result, carry
 }
 
 // Sub creates result to the difference i-y
-func (i *UInt128) Sub(y *UInt128) (result UInt128) {
+func (i UInt128) Sub(y UInt128) (result UInt128) {
 	var borrow uint64
 	result[1], borrow = bits.Sub64(i[1], y[1], borrow)
 	result[0], _ = bits.Sub64(i[0], y[0], borrow)
@@ -147,14 +147,14 @@ func (i *UInt128) Sub(y *UInt128) (result UInt128) {
 }
 
 // Sub creates result to the difference i-y, borrow is 0
-func (i *UInt128) SubOverflow(y *UInt128, borrow uint64) (result UInt128, borrowOut uint64) {
+func (i UInt128) SubOverflow(y UInt128, borrow uint64) (result UInt128, borrowOut uint64) {
 	result[1], borrow = bits.Sub64(i[1], y[1], borrow)
 	result[0], borrow = bits.Sub64(i[0], y[0], borrow)
 	return result, borrow
 }
 
 // Mul creates result to the mult i * y
-func (i *UInt128) Mul(y *UInt128) (result UInt128) {
+func (i UInt128) Mul(y UInt128) (result UInt128) {
 	hiIt, loIt := bits.Mul64(i[1], y[1])
 	result[0] = hiIt
 	result[1] = loIt
@@ -169,7 +169,7 @@ func (i *UInt128) Mul(y *UInt128) (result UInt128) {
 }
 
 // MulUInt64 creates result to the mult i * y
-func (i *UInt128) MulUInt64(y uint64) (result UInt128) {
+func (i UInt128) MulUInt64(y uint64) (result UInt128) {
 	hiIt, loIt := bits.Mul64(i[1], y)
 	result[0] = hiIt
 	result[1] = loIt
@@ -181,7 +181,7 @@ func (i *UInt128) MulUInt64(y uint64) (result UInt128) {
 }
 
 // Mul creates result to the mult i * y
-func (i *UInt128) MulOverflow(y *UInt128) (hi, lo UInt128) {
+func (i UInt128) MulOverflow(y *UInt128) (hi, lo UInt128) {
 
 	hiIt, loIt := bits.Mul64(i[1], y[1])
 	lo[0] = hiIt
@@ -206,7 +206,7 @@ func (i *UInt128) MulOverflow(y *UInt128) (hi, lo UInt128) {
 }
 
 // MoveBitUp creates result << (move)
-func (i *UInt128) MoveBitUp(move int) (result UInt128) {
+func (i UInt128) MoveBitUp(move int) (result UInt128) {
 	byMove := move / 64
 	biMove := move - byMove*64
 
@@ -221,7 +221,7 @@ func (i *UInt128) MoveBitUp(move int) (result UInt128) {
 }
 
 // MoveBitDown creates result >> (move)
-func (i *UInt128) MoveBitDown(move int) (result UInt128) {
+func (i UInt128) MoveBitDown(move int) (result UInt128) {
 	byMove := move / 64
 	biMove := move - byMove*64
 
@@ -243,7 +243,7 @@ func (i *UInt128) MoveBitDown1Internal() {
 }
 
 // DivUint64 creates result to the quo = i / y; rem = i - div*y
-func (i *UInt128) DivUint64(y uint64) (quo UInt128, rem UInt128) {
+func (i UInt128) DivUint64(y uint64) (quo UInt128, rem UInt128) {
 	var r uint64
 	quo[0], r = bits.Div64(0, i[0], y)
 	quo[1], rem[1] = bits.Div64(r, i[1], y)
@@ -251,7 +251,7 @@ func (i *UInt128) DivUint64(y uint64) (quo UInt128, rem UInt128) {
 }
 
 // Div creates result to the quo = i / y; rem = i - div*y
-func (i UInt128) Div(y *UInt128) (quo UInt128, rem UInt128) {
+func (i UInt128) Div(y UInt128) (quo UInt128, rem UInt128) {
 	if y.IsUint64() {
 		return i.DivUint64(y.UInt64())
 	}
@@ -281,7 +281,7 @@ func (i UInt128) Div(y *UInt128) (quo UInt128, rem UInt128) {
 
 	for !rem.Less(y) {
 		// may be faster
-		for rem.Less(&diffY) && k > 0 {
+		for rem.Less(diffY) && k > 0 {
 			//diffRes = diffRes.MoveBitDown(1)
 			//diffY = diffY.MoveBitDown(1)
 			diffRes.MoveBitDown1Internal()
@@ -289,8 +289,8 @@ func (i UInt128) Div(y *UInt128) (quo UInt128, rem UInt128) {
 			k--
 		}
 
-		rem = rem.Sub(&diffY)
-		quo = quo.Add(&diffRes)
+		rem = rem.Sub(diffY)
+		quo = quo.Add(diffRes)
 	}
 
 	return quo, rem
@@ -382,21 +382,21 @@ func (i *UInt128) UnmarshalJSON(input []byte) error {
 	return i.FromTextByte(input[1:len(input)-1], 10, false)
 }
 
-//MarshalJSON() implements json.Marshaler.
+// MarshalJSON() implements json.Marshaler.
 func (i UInt128) MarshalJSON() ([]byte, error) {
 	txt := i.Text(10)
 	return []byte(txt), nil
 }
 
 // Power returns p = i^e
-func (i *UInt128) Power(e *UInt128) (p *UInt128) {
-	p = &UInt128{0, 1}
+func (i UInt128) Power(e UInt128) (p UInt128) {
+	p = UInt128{0, 1}
 
 	for !e.IsEmpty() {
 		if (e[1] & 1) != 0 {
-			p = p.Mul(i).Link()
+			p = p.Mul(i)
 		}
-		i = i.Mul(i).Link()
+		i = i.Mul(i)
 		e.MoveBitDown1Internal()
 	}
 	return p
@@ -456,8 +456,8 @@ func (i *UInt128) SetBit0(pos int) {
 }
 
 // Root r => r^b=i when no resault then nearest r^b<=i
-func (i *UInt128) Root(base uint64) (r UInt128) {
-	iB := &UInt128{0, base}
+func (i UInt128) Root(base uint64) (r UInt128) {
+	iB := UInt128{0, base}
 
 	if base == 0 {
 		panic("root base should be > 0")
@@ -468,7 +468,7 @@ func (i *UInt128) Root(base uint64) (r UInt128) {
 	if i.IsEmpty() {
 		return i.Copy()
 	}
-	if i.Equal(&UInt128{0, 1}) {
+	if i.Equal(UInt128{0, 1}) {
 		return i.Copy()
 	}
 
