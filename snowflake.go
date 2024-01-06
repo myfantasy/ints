@@ -20,9 +20,9 @@ const (
 // ~69 years in 4 bit
 type SnowflakeGenerator struct {
 	Mx sync.Mutex
-	// TimeShift - timeshift / Use 1288834974657 for default generator
+	// TimeShift - time shift / Use 1288834974657 for default generator
 	TimeShift int64
-	// DataCenterID - datacenter id 0-31 (valid values)
+	// DataCenterID - data center id 0-31 (valid values)
 	DataCenterID int64
 	// ServerID - server id 0-31 (valid values)
 	ServerID int64
@@ -56,7 +56,7 @@ func (fg *SnowflakeGenerator) NextLock() (id int64, owerload bool) {
 // NextRaw - gets next id: 1 - 0 | 41 - time in milliseconds | 5 - data center | 5 server | 12 sequence
 // ~69 years in 4 bit
 func (fg *SnowflakeGenerator) NextRaw() (id int64, owerload bool) {
-	m := time.Now().UnixMilli()
+	m := time.Now().UnixMilli() - fg.TimeShift
 
 	if fg.lastTime != m {
 		fg.lastTime = m
@@ -75,15 +75,25 @@ func (fg *SnowflakeGenerator) NextRaw() (id int64, owerload bool) {
 }
 
 // LimitID - generates min id for time
-func LimitID(t time.Time) (id int64) {
-	m := t.UnixMilli()
+func (fg *SnowflakeGenerator) LimitID(t time.Time) (id int64) {
+	m := t.UnixMilli() - fg.TimeShift
 	return m << 22
 }
 
 // GetTimeFromID - get time from id
-func GetTimeFromID(id int64) time.Time {
+func (fg *SnowflakeGenerator) GetTimeFromID(id int64) time.Time {
 	t := id >> 22
-	return time.UnixMilli(t)
+	return time.UnixMilli(t + fg.TimeShift)
+}
+
+// LimitID - generates min id for time
+func LimitID(t time.Time) (id int64) {
+	return DefaultSnowflakeGenerator.LimitID(t)
+}
+
+// GetTimeFromID - get time from id
+func GetTimeFromID(id int64) time.Time {
+	return DefaultSnowflakeGenerator.GetTimeFromID(id)
 }
 
 // NextID - gets next id: 1 - 0 | 41 - time in milliseconds | 5 - data center | 5 server | 12 sequence
