@@ -516,3 +516,23 @@ func UInt128FromTextByte(value []byte, base int, ignoreFail bool) (i UInt128, er
 
 	return i, err
 }
+
+func UInt128FromTextMust(value string, base int, ignoreFail bool) (i UInt128) {
+	err := i.FromText(value, base, ignoreFail)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return i
+}
+
+func UInt128FromTextByteMust(value []byte, base int, ignoreFail bool) (i UInt128) {
+	err := i.FromTextByte(value, base, ignoreFail)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return i
+}

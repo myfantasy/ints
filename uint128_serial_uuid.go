@@ -2,7 +2,6 @@ package ints
 
 import (
 	"crypto/rand"
-	"fmt"
 	"sync"
 	"time"
 )
@@ -12,24 +11,6 @@ const Nval uint64 = 1 << 63
 const maxStep uint64 = 1 << 14
 
 var DefaultUuidGenerator = &UuidSerialGenerator{}
-
-type Uuid struct {
-	UInt128
-}
-
-// Less returns true when i < val
-func (i Uuid) Less(val Uuid) bool {
-	return i.UInt128.Less(val.UInt128)
-}
-
-// Equal returns true when i == val
-func (i Uuid) Equal(val Uuid) bool {
-	return i == val
-}
-
-func (i Uuid) Link() *Uuid {
-	return &i
-}
 
 type UuidSerialGenerator struct {
 	RandomTail UInt128
@@ -163,27 +144,6 @@ func GetTimeFormSerialUUID(val Uuid) time.Time {
 	return time.UnixMilli(int64(unix))
 }
 
-func (i Uuid) AsUUID() string {
-	bts := i.AsBytes()
-	res := make([]byte, 36)
-
-	app := 0
-	for i, v := range bts {
-		if i == 4 || i == 6 || i == 8 || i == 10 {
-			res[i*2+app] = hyphen
-			app++
-		}
-		res[i*2+app] = digitsByte[int(v>>4)]
-		res[i*2+1+app] = digitsByte[int((v<<4)>>4)]
-	}
-
-	return string(res)
-}
-
-func (i Uuid) String() string {
-	return i.AsUUID()
-}
-
 // NextUUID - Next Serial id from DefaultUuidGenerator
 // xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
 // M 0100 (version 4)
@@ -196,28 +156,6 @@ func (i Uuid) String() string {
 // r - random value (Generated on Init)
 func NextUUID() (res Uuid) {
 	return DefaultUuidGenerator.Next()
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (i *Uuid) UnmarshalJSON(input []byte) error {
-	if input == nil {
-		return nil
-	}
-	if len(input) == 0 {
-		return fmt.Errorf("empty value")
-	}
-	if input[0] != '"' {
-		return i.FromTextByte(input, 16, true)
-	} else if len(input) < 3 {
-		return fmt.Errorf("empty value (\")")
-	}
-	return i.FromTextByte(input[1:len(input)-1], 16, true)
-}
-
-// MarshalJSON() implements json.Marshaler.
-func (i Uuid) MarshalJSON() ([]byte, error) {
-	txt := "\"" + i.AsUUID() + "\""
-	return []byte(txt), nil
 }
 
 func (i Uuid) TimePart() time.Time {
@@ -234,20 +172,4 @@ func (i Uuid) StepPart() uint64 {
 func (i Uuid) UniquePart() uint64 {
 	t := ((i.UInt128[0] << 4) >> 4)
 	return t
-}
-
-func (i Uuid) Text(base int) string {
-	return i.UInt128.Text(base)
-}
-
-func UuidFromText(value string, base int, ignoreFail bool) (i Uuid, err error) {
-	err = i.FromText(value, base, ignoreFail)
-
-	return i, err
-}
-
-func UuidFromTextByte(value []byte, base int, ignoreFail bool) (i Uuid, err error) {
-	err = i.FromTextByte(value, base, ignoreFail)
-
-	return i, err
 }
