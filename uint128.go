@@ -181,7 +181,7 @@ func (i UInt128) MulUInt64(y uint64) (result UInt128) {
 }
 
 // Mul creates result to the mult i * y
-func (i UInt128) MulOverflow(y *UInt128) (hi, lo UInt128) {
+func (i UInt128) MulOverflow(y UInt128) (hi, lo UInt128) {
 
 	hiIt, loIt := bits.Mul64(i[1], y[1])
 	lo[0] = hiIt
@@ -297,12 +297,12 @@ func (i UInt128) Div(y UInt128) (quo UInt128, rem UInt128) {
 
 }
 
-func (i *UInt128) Text(base int) string {
+func (i UInt128) Text(base int) string {
 	if base < 2 {
 		panic("Base should be not less than 2")
 	}
-	if base > 61 {
-		panic("Base should be not more than 61")
+	if base > 62 {
+		panic("Base should be not more than 62")
 	}
 
 	/*
@@ -325,7 +325,7 @@ func (i *UInt128) Text(base int) string {
 	for !i.IsEmpty() {
 		q, r := i.DivUint64(uint64(base))
 		res = digits[int(r[1])] + res
-		i = &q
+		i = q
 	}
 
 	if res == "" {
@@ -334,7 +334,7 @@ func (i *UInt128) Text(base int) string {
 
 	return res
 }
-func (i *UInt128) String() string {
+func (i UInt128) String() string {
 	return i.Text(10)
 }
 
@@ -403,7 +403,7 @@ func (i UInt128) Power(e UInt128) (p UInt128) {
 }
 
 // GetBit gets bit from pos (0..127)
-func (i *UInt128) GetBit(pos int) bool {
+func (i UInt128) GetBit(pos int) bool {
 	val := pos / 64
 
 	pos = pos - val*64
@@ -501,6 +501,18 @@ func (i UInt128) Root(base uint64) (r UInt128) {
 }
 
 // Sqrt r => r^2=i when no resault then nearest r^2<=i
-func (i *UInt128) Sqrt() (r UInt128) {
+func (i UInt128) Sqrt() (r UInt128) {
 	return i.Root(2)
+}
+
+func UInt128FromText(value string, base int, ignoreFail bool) (i UInt128, err error) {
+	err = i.FromText(value, base, ignoreFail)
+
+	return i, err
+}
+
+func UInt128FromTextByte(value []byte, base int, ignoreFail bool) (i UInt128, err error) {
+	err = i.FromTextByte(value, base, ignoreFail)
+
+	return i, err
 }

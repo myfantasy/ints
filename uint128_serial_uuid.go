@@ -163,7 +163,7 @@ func GetTimeFormSerialUUID(val Uuid) time.Time {
 	return time.UnixMilli(int64(unix))
 }
 
-func (i *Uuid) AsUUID() string {
+func (i Uuid) AsUUID() string {
 	bts := i.AsBytes()
 	res := make([]byte, 36)
 
@@ -220,18 +220,34 @@ func (i Uuid) MarshalJSON() ([]byte, error) {
 	return []byte(txt), nil
 }
 
-func (i *Uuid) TimePart() time.Time {
+func (i Uuid) TimePart() time.Time {
 	t := int64(i.UInt128[0] >> 16)
 	return time.Unix(t/1000, t%1000000)
 }
 
-func (i *Uuid) StepPart() uint64 {
+func (i Uuid) StepPart() uint64 {
 	t := ((i.UInt128[0] << (64 - 12)) >> (64 - 14)) +
 		((i.UInt128[1] << 2) >> (64 - 2))
 	return t
 }
 
-func (i *Uuid) UniquePart() uint64 {
+func (i Uuid) UniquePart() uint64 {
 	t := ((i.UInt128[0] << 4) >> 4)
 	return t
+}
+
+func (i Uuid) Text(base int) string {
+	return i.UInt128.Text(base)
+}
+
+func UuidFromText(value string, base int, ignoreFail bool) (i Uuid, err error) {
+	err = i.FromText(value, base, ignoreFail)
+
+	return i, err
+}
+
+func UuidFromTextByte(value []byte, base int, ignoreFail bool) (i Uuid, err error) {
+	err = i.FromTextByte(value, base, ignoreFail)
+
+	return i, err
 }
