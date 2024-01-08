@@ -37,7 +37,7 @@ type SnowflakeGenerator struct {
 func (fg *SnowflakeGenerator) Next() int64 {
 	id, owerload := fg.NextLock()
 
-	if owerload {
+	for owerload {
 		id, owerload = fg.NextLock()
 	}
 
