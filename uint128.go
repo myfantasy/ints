@@ -536,3 +536,12 @@ func UInt128FromTextByteMust(value []byte, base int, ignoreFail bool) (i UInt128
 
 	return i
 }
+
+func UInt128FromUint64(value uint64) (i UInt128) {
+	i[1] = value
+
+	return i
+}
+func UInt128FromInt(value int) (i UInt128) {
+	return UInt128FromUint64(uint64(value))
+}
