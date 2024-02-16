@@ -9,3 +9,7 @@ func BenchmarkUInt128Rand(b *testing.B) {
 		RandUUID()
 	}
 }
+
+func TestRandUUID(t *testing.T) {
+	//t.Error(RandUUID())
+}
